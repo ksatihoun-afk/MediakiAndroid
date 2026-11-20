@@ -17,12 +17,12 @@ workflows:
         - $HOME/.gradle/notifications
         - $HOME/.gradle/distributions
     scripts:
-      - name: Vérifier l'environnement Android
+      - name: Vérifier et préparer l'environnement Android
         script: |
+          set -euo pipefail
           java -version
+          : "${ANDROID_HOME:?ANDROID_HOME n'est pas défini par l'image Codemagic}"
           echo "ANDROID_HOME=$ANDROID_HOME"
-          test -d "$ANDROID_HOME/platforms/android-35" || sdkmanager --install "platforms;android-35"
-          test -d "$ANDROID_HOME/build-tools/35.0.0" || sdkmanager --install "build-tools;35.0.0"
       - name: Installer Gradle et compiler l'APK
         script: |
           bash scripts/codemagic-build.sh
