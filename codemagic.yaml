@@ -1,0 +1,31 @@
+workflows:
+  mediaki-android-debug:
+    name: Mediaki - Android APK (Debug)
+    max_build_duration: 60
+    instance_type: linux_x2
+    environment:
+      vars:
+        GRADLE_VERSION: "8.11.1"
+        ANDROID_COMPILE_SDK: "35"
+        ANDROID_BUILD_TOOLS: "35.0.0"
+      java: 17
+    cache:
+      cache_paths:
+        - $HOME/.gradle/caches
+        - $HOME/.gradle/daemon
+        - $HOME/.gradle/native
+        - $HOME/.gradle/notifications
+        - $HOME/.gradle/distributions
+    scripts:
+      - name: Vérifier l'environnement Android
+        script: |
+          java -version
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          test -d "$ANDROID_HOME/platforms/android-35" || sdkmanager --install "platforms;android-35"
+          test -d "$ANDROID_HOME/build-tools/35.0.0" || sdkmanager --install "build-tools;35.0.0"
+      - name: Installer Gradle et compiler l'APK
+        script: |
+          bash scripts/codemagic-build.sh
+    artifacts:
+      - app/build/outputs/apk/debug/*.apk
+      - app/build/outputs/mapping/**/mapping.txt
